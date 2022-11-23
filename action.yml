@@ -55,7 +55,7 @@ runs:
     - uses: actions/upload-artifact@v3
       with:
         name: "${{ inputs.branch_name }}-${{ inputs.folder }}-rover"
-        path: ./rover.zip
+        path: ./${{ inputs.folder }}/rover.zip
 
 branding:
   icon: 'cloud'
