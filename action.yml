@@ -46,6 +46,17 @@ runs:
         chmod +x ./rover_v0.3.3
         ./rover_v0.3.3 --help
       shell: bash
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ inputs.branch_name }}
+    - uses: hashicorp/setup-terraform@v2
+    - id: terraform
+      run: |
+        cd ${{ inputs.folder }}
+        terraform init
+        ../rover_v0.3.3 --standalone
+      shell: bash
+
 
 branding:
   icon: 'cloud'
