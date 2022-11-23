@@ -39,9 +39,11 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: wget https://github.com/im2nguyen/rover/releases/download/v0.3.3/rover_0.3.3_linux_amd64.zip
-    - run: unzip ./rover_0.3.3_linux_amd64.zip
-    - run: rover_v0.3.3 --help
+    - run: |        
+        wget https://github.com/im2nguyen/rover/releases/download/v0.3.3/rover_0.3.3_linux_amd64.zip
+        unzip ./rover_0.3.3_linux_amd64.zip
+        rover_v0.3.3 --help
+      shell: bash
 
 branding:
   icon: 'cloud'
