@@ -1,0 +1,94 @@
+name: 'terraform_state_artifact'
+description: 'Sets up and runs Terraform, and creates an encrypted Terraform artifact'
+author: 'Sturla Bragason'
+inputs:
+  folder:
+    description: folder
+    required: false
+    default: 'sandbox'
+  branch_name:
+    description: branch
+    required: false
+    default: 'main'
+  encryptionkey:
+    description: 'Used to read artifact and as a key to encrypt and decrypt the state file artifact'
+    required: true
+  apply:
+    description: 'terraform apply'
+    required: false
+    default: false
+  status:
+    description: 'terraform status'
+    required: false
+    default: false
+  destroy:
+    description: 'terraform destroy'
+    required: false
+    default: false
+  custom_plan_flags:
+    description: 'Add custom flags to the terraform plan command'
+    required: false
+    default: ''
+  custom_apply_flags:
+    description: 'Add custom flags to the terraform apply command'
+    required: false
+    default: ''
+  github_pat:
+    required: true
+    
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ inputs.branch_name }}
+    - uses: hashicorp/setup-terraform@v2
+    - id: terraform
+      run: |
+        cd ${{ inputs.folder }}
+        $Repo = "${{ github.repository }}"
+        $BaseUri = "https://api.github.com"
+        $ArtifactUri = "$BaseUri/repos/$Repo/actions/artifacts"
+        $Token = "${{ github.token }}" | ConvertTo-SecureString -AsPlainText
+        $RestResponse = Invoke-RestMethod -Authentication Bearer -Uri $ArtifactUri -Token $Token | Select-Object -ExpandProperty artifacts
+        if ($RestResponse){
+          $MostRecentArtifactURI = $RestResponse | Sort-Object -Property created_at -Descending | where name -eq "${{ inputs.branch_name }}-${{ inputs.folder }}-terraformstatefile" | Select-Object -First 1 | Select-Object -ExpandProperty archive_download_url
+          Write-Host "Most recent artifact URI = $MostRecentArtifactURI"
+          if ($MostRecentArtifactURI){
+            Invoke-RestMethod -uri $MostRecentArtifactURI -Token $Token -Authentication bearer -outfile ./state.zip
+            Expand-Archive ./state.zip
+            openssl enc -d -in ./state/terraform.tfstate.enc -aes-256-cbc -pbkdf2 -pass pass:"${{ inputs.encryptionkey }}" -out ./terraform.tfstate
+          }
+        }
+        terraform init
+        $terraformapply = "${{ inputs.apply }}"
+        $terraformdestroy = "${{ inputs.destroy }}"
+        $terraformstatus = "${{ inputs.status }}"
+        $custom_plan_flags = "${{ inputs.custom_plan_flags }}"
+        $custom_apply_flags = "${{ inputs.custom_apply_flags }}"
+        if ($terraformstatus -eq "true"){
+          terraform show
+        }
+        if ($terraformplan -eq "true"){
+          terraform plan $custom_plan_flags 
+        }
+        if ($terraformapply -eq "true"){
+          terraform apply -auto-approve $custom_apply_flags
+        }
+        if ($terraformdestroy -eq "true"){
+          terraform destroy -auto-approve $custom_apply_flags
+        }
+        if ($terraformapply){
+          $StateExists = Test-Path -Path ./terraform.tfstate -PathType Leaf
+          if ($StateExists){
+            openssl enc -in ./terraform.tfstate -aes-256-cbc -pbkdf2 -pass pass:"${{ inputs.encryptionkey }}" -out ./terraform.tfstate.enc
+          }
+        }
+      shell: pwsh
+    - uses: actions/upload-artifact@v3
+      with:
+        name: "${{ inputs.branch_name }}-${{ inputs.folder }}-terraformstatefile"
+        path: ./${{ inputs.folder }}/terraform.tfstate.enc
+branding:
+  icon: 'cloud'
+  color: 'gray-dark'
