@@ -52,7 +52,10 @@ runs:
         ls -l 
         ./rover_v0.3.3 --standalone
       shell: bash
-
+    - uses: actions/upload-artifact@v3
+      with:
+        name: "${{ inputs.branch_name }}-${{ inputs.folder }}-rover"
+        path: ./rover.zip
 
 branding:
   icon: 'cloud'
