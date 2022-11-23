@@ -29,12 +29,19 @@ runs:
         unzip ./rover_0.3.3_linux_amd64.zip
         terraform init
         ls -l 
-        ./rover_v0.3.3 --standalone -genImage true
+        ./rover_v0.3.3 --standalone
+        ./rover_v0.3.3 -genImage true
+        ls -l 
       shell: bash
     - uses: actions/upload-artifact@v3
       with:
         name: "${{ inputs.branch_name }}-${{ inputs.folder }}-rover.zip"
         path: ./${{ inputs.folder }}/rover.zip
+     - uses: actions/upload-artifact@v3
+      with:
+        name: "${{ inputs.branch_name }}-${{ inputs.folder }}-rover.svg"
+        path: ./${{ inputs.folder }}/rover.svg
+
 
 branding:
   icon: 'cloud'
