@@ -43,8 +43,8 @@ runs:
         wget https://github.com/im2nguyen/rover/releases/download/v0.3.3/rover_0.3.3_linux_amd64.zip
         unzip ./rover_0.3.3_linux_amd64.zip
         ls -l
-        find / -type f -inasme rover_v0.3.3
-        rover_v0.3.3 --help
+        chmod +x ./rover_v0.3.3
+        ./rover_v0.3.3 --help
       shell: bash
 
 branding:
