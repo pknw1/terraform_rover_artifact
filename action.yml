@@ -1,6 +1,6 @@
-name: 'terraform_state_artifact'
+name: 'terraform_rover_artifact'
 description: 'Sets up and runs Terraform, and creates an encrypted Terraform artifact'
-author: 'Sturla Bragason'
+author: 'Paul Kelleher'
 inputs:
   folder:
     description: folder
@@ -10,31 +10,7 @@ inputs:
     description: branch
     required: false
     default: 'main'
-  encryptionkey:
-    description: 'Used to read artifact and as a key to encrypt and decrypt the state file artifact'
-    required: true
-  apply:
-    description: 'terraform apply'
-    required: false
-    default: false
-  status:
-    description: 'terraform status'
-    required: false
-    default: false
-  destroy:
-    description: 'terraform destroy'
-    required: false
-    default: false
-  custom_plan_flags:
-    description: 'Add custom flags to the terraform plan command'
-    required: false
-    default: ''
-  custom_apply_flags:
-    description: 'Add custom flags to the terraform apply command'
-    required: false
-    default: ''
-  github_pat:
-    required: true
+  
     
 runs:
   using: "composite"
@@ -54,7 +30,7 @@ runs:
       shell: bash
     - uses: actions/upload-artifact@v3
       with:
-        name: "${{ inputs.branch_name }}-${{ inputs.folder }}-rover"
+        name: "${{ inputs.branch_name }}-${{ inputs.folder }}-rover.zip"
         path: ./${{ inputs.folder }}/rover.zip
 
 branding:
