@@ -37,7 +37,7 @@ runs:
       with:
         name: "${{ inputs.branch_name }}-${{ inputs.folder }}-rover.zip"
         path: ./${{ inputs.folder }}/rover.zip
-     - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v3
       with:
         name: "${{ inputs.branch_name }}-${{ inputs.folder }}-rover.svg"
         path: ./${{ inputs.folder }}/rover.svg
