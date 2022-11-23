@@ -39,13 +39,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: |        
-        wget https://github.com/im2nguyen/rover/releases/download/v0.3.3/rover_0.3.3_linux_amd64.zip
-        unzip ./rover_0.3.3_linux_amd64.zip
-        ls -l
-        chmod +x ./rover_v0.3.3
-        ./rover_v0.3.3 --help
-      shell: bash
     - uses: actions/checkout@v3
       with:
         ref: ${{ inputs.branch_name }}
@@ -53,8 +46,11 @@ runs:
     - id: terraform
       run: |
         cd ${{ inputs.folder }}
+        wget https://github.com/im2nguyen/rover/releases/download/v0.3.3/rover_0.3.3_linux_amd64.zip
+        unzip ./rover_0.3.3_linux_amd64.zip
         terraform init
-        ../rover_v0.3.3 --standalone
+        ls -l 
+        ./rover_v0.3.3 --standalone
       shell: bash
 
 
