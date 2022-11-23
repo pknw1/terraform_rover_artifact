@@ -23,6 +23,9 @@ runs:
       run: |
         cd ${{ inputs.folder }}
         wget https://github.com/im2nguyen/rover/releases/download/v0.3.3/rover_0.3.3_linux_amd64.zip
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo apt install -y ./google-chrome-stable_current_amd64.deb
+        sudo apt install -f -y
         unzip ./rover_0.3.3_linux_amd64.zip
         terraform init
         ls -l 
